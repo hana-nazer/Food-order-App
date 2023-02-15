@@ -2,7 +2,7 @@ import React from "react";
 import Modal from "../UI/Modal";
 import classes from './Cart.module.css'
 
-function Cart() {
+function Cart(props) {
   const cartItems = (
     <ul>
       {[
@@ -18,7 +18,7 @@ function Cart() {
     </ul>
   );
   return (
-    <Modal>
+    <Modal onClick={props.onHide}>
    {/* <div className={classes['cart-items ']}> */}
       {cartItems}
       <div className={classes.total}>
@@ -26,7 +26,7 @@ function Cart() {
         <span>567</span>
       </div>
       <div className={classes.actions}>
-        <button className={classes['button--alt']}>close</button>
+        <button className={classes['button--alt']} onClick={props.onHide}>close</button>
         <button className={classes.button}>order</button>
       </div>
      {/* </div> */}
