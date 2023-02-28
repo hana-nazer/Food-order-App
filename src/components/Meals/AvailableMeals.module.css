@@ -11,6 +11,11 @@
     padding: 0;
   }
 
+  .mealsError{
+    text-align: center;
+    color: red;
+    font-size: larger;
+  }
   .mealsLoading{
     text-align: center;
     color: white;
