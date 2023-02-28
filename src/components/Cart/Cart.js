@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { Fragment, useContext, useState } from "react";
 import Modal from "../UI/Modal";
 import classes from "./Cart.module.css";
 import cartContext from "../../store/cart-context";
@@ -7,6 +7,8 @@ import CheckoutForm from "./CheckoutForm";
 
 function Cart(props) {
   const [isCheckout, setIsCheckout] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [didSubmit, setDidSubmit] = useState(false);
   // cartContext is assigned to cartctx so that we can access the data
   // in the context in different components there by avoiding props drilling
   const cartctx = useContext(cartContext);
@@ -45,41 +47,73 @@ function Cart(props) {
   // taking the total amount and placing exact two decimals after point
   const totalAmount = cartctx.totalAmount.toFixed(2);
 
-  const checkoutHandler=()=>{
-     setIsCheckout(true)
-  }
+  const checkoutHandler = () => {
+    setIsCheckout(true);
+  };
 
   const cartActions = (
     <div className={classes.actions}>
       <button className={classes["button--alt"]} onClick={props.onHide}>
         close
       </button>
-      {hasItems && <button className={classes.button} onClick={checkoutHandler}>order</button>}
+      {hasItems && (
+        <button className={classes.button} onClick={checkoutHandler}>
+          order
+        </button>
+      )}
     </div>
   );
 
-  const orderHandler=(userData)=>{
-    fetch('https://food-order-app-bb949-default-rtdb.firebaseio.com/orders.json',{
-      method:'POST',
-      body:JSON.stringify({
-        user:userData,
-        orderedItems:cartctx.items
-      })
-    })
-  }
+  const orderHandler = async (userData) => {
+    setIsSubmitting(true);
+    await fetch(
+      "https://food-order-app-bb949-default-rtdb.firebaseio.com/orders.json",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          user: userData,
+          orderedItems: cartctx.items,
+        }),
+      }
+    );
+    setIsSubmitting(false);
+    setDidSubmit(true)
+    cartctx.clearCart()
+  };
+
+  const cartModalContent = (
+    <Fragment>
+      {" "}
+      {cartItems}
+      <div className={classes.total}>
+        <span>Amount</span>
+        <span>{totalAmount}</span>
+      </div>
+      {isCheckout && (
+        <CheckoutForm onConfirm={orderHandler} onCancel={props.onHide} />
+      )}
+      {!isCheckout && cartActions}
+    </Fragment>
+  );
+  const submitModalContent = <p>Sending Data ....</p>;
+  const didSubmitContent = <Fragment>
+    <p>Confirmed the order successfully</p>
+    <div className={classes.actions}>
+      <button className={classes.button} onClick={props.onHide}>
+        close
+      </button>
+      
+    </div>
+  </Fragment>
   return (
     // Modal component onClick is assigned to onHide passed as props,
     // passing this to close cart when clicking backdrop
     <Modal onClick={props.onHide}>
       <div className={classes["cart-items"]}>
         {/* listing cartitems */}
-        {cartItems}
-        <div className={classes.total}>
-          <span>Amount</span>
-          <span>{totalAmount}</span>
-        </div>
-        {isCheckout && <CheckoutForm onConfirm={orderHandler} onCancel = {props.onHide} />}
-        {!isCheckout && cartActions}
+        {!isSubmitting && !didSubmit && cartModalContent}
+        {isSubmitting  && submitModalContent}
+        {!isSubmitting&& didSubmit && didSubmitContent}
       </div>
     </Modal>
   );
