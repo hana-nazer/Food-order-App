@@ -57,6 +57,16 @@ function Cart(props) {
       {hasItems && <button className={classes.button} onClick={checkoutHandler}>order</button>}
     </div>
   );
+
+  const orderHandler=(userData)=>{
+    fetch('https://food-order-app-bb949-default-rtdb.firebaseio.com/orders.json',{
+      method:'POST',
+      body:JSON.stringify({
+        user:userData,
+        orderedItems:cartctx.items
+      })
+    })
+  }
   return (
     // Modal component onClick is assigned to onHide passed as props,
     // passing this to close cart when clicking backdrop
@@ -68,7 +78,7 @@ function Cart(props) {
           <span>Amount</span>
           <span>{totalAmount}</span>
         </div>
-        {isCheckout && <CheckoutForm onCancel = {props.onHide} />}
+        {isCheckout && <CheckoutForm onConfirm={orderHandler} onCancel = {props.onHide} />}
         {!isCheckout && cartActions}
       </div>
     </Modal>
