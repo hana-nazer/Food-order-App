@@ -1,10 +1,12 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import Modal from "../UI/Modal";
 import classes from "./Cart.module.css";
 import cartContext from "../../store/cart-context";
 import CartItem from "./CartItem";
+import CheckoutForm from "./CheckoutForm";
 
 function Cart(props) {
+  const [isCheckout, setIsCheckout] = useState(false);
   // cartContext is assigned to cartctx so that we can access the data
   // in the context in different components there by avoiding props drilling
   const cartctx = useContext(cartContext);
@@ -42,6 +44,19 @@ function Cart(props) {
 
   // taking the total amount and placing exact two decimals after point
   const totalAmount = cartctx.totalAmount.toFixed(2);
+
+  const checkoutHandler=()=>{
+     setIsCheckout(true)
+  }
+
+  const cartActions = (
+    <div className={classes.actions}>
+      <button className={classes["button--alt"]} onClick={props.onHide}>
+        close
+      </button>
+      {hasItems && <button className={classes.button} onClick={checkoutHandler}>order</button>}
+    </div>
+  );
   return (
     // Modal component onClick is assigned to onHide passed as props,
     // passing this to close cart when clicking backdrop
@@ -53,12 +68,8 @@ function Cart(props) {
           <span>Amount</span>
           <span>{totalAmount}</span>
         </div>
-        <div className={classes.actions}>
-          <button className={classes["button--alt"]} onClick={props.onHide}>
-            close
-          </button>
-          {hasItems && <button className={classes.button}>order</button>}
-        </div>
+        {isCheckout && <CheckoutForm onCancel = {props.onHide} />}
+        {!isCheckout && cartActions}
       </div>
     </Modal>
   );
