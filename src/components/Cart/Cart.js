@@ -5,13 +5,22 @@ import cartContext from "../../store/cart-context";
 import CartItem from "./CartItem";
 
 function Cart(props) {
+  // cartContext is assigned to cartctx so that we can access the data
+  // in the context in different components there by avoiding props drilling
   const cartctx = useContext(cartContext);
+
+  // to remove the selected item in cart when clicking - icon
   const removeItemHandler = (id) => {
-    cartctx.removeItem(id)
+    cartctx.removeItem(id);
   };
+
+  //   to add the selected item in cart when clicking + icon
   const addItemHandler = (item) => {
-    cartctx.addItem({...item,amount:1})
+    // passing the item and amount increasing by 1
+    cartctx.addItem({ ...item, amount: 1 });
   };
+
+  // listing cartitems using map and a new component named CartItem is used to show that
   const cartItems = (
     <ul>
       {cartctx.items.map((item) => (
@@ -26,11 +35,19 @@ function Cart(props) {
       ))}
     </ul>
   );
+
+  // checking the cart is empty or not , using this to show or hide the order button
+  // if no items order button is hided
   const hasItems = cartctx.items.length > 0;
+
+  // taking the total amount and placing exact two decimals after point
   const totalAmount = cartctx.totalAmount.toFixed(2);
   return (
-    <Modal onClick={props.onHide} >
+    // Modal component onClick is assigned to onHide passed as props,
+    // passing this to close cart when clicking backdrop
+    <Modal onClick={props.onHide}>
       <div className={classes["cart-items"]}>
+        {/* listing cartitems */}
         {cartItems}
         <div className={classes.total}>
           <span>Amount</span>

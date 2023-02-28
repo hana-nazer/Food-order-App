@@ -1,11 +1,15 @@
 import React, { useReducer } from "react";
 import CartContext from "./cart-context";
 
+// this final mainly is to manage the content and operations in context, why using this is to
+// make the context component lean
+
 const defaultState = {
   items: [],
   totalAmount: 0,
 };
 
+// reducer function
 const cartReducer = (state, action) => {
   if (action.type === "ADD") {
     // const updatedCartItem = state.items.concat(action.item)
@@ -65,7 +69,7 @@ function CartProvider(props) {
   const removeItemHandler = (id) => {
     dispatchCartAction({
       type: "REMOVE",
-      id: id
+      id: id,
     });
   };
   const cartContext = {
